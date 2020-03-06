@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
+    <script src="../../Scripts/FlightDtes.js"></script>
+    <title> Search Page </title>
+</head>
+<body style="background-image:url(https://c4.wallpaperflare.com/wallpaper/1017/525/123/the-sky-aviation-the-plane-background-wallpaper-preview.jpg);background-repeat:no-repeat; background-position:center; background-attachment:fixed; background-size:cover">
+
+    <div>
+        <select class="btn btn-danger" id="options">
+            <option value="airline">Airline Company Name</option>
+            <option value="destination">Destination Country Name</option>
+            <option value="origin">Original Country Name</option>
+            <option value="flight">Flight Number</option>
+        </select>
+        <input type="text" id="txtBox" />
+        <button class="btn btn-success"onclick="onSearchClick()">Search</button>
+
+    </div>
+
+    <table border="1" id="flightsTable" style="text-align: center" class="table table-striped table-bordered">
+        <!--<tr>
+            <th>#</th>
+            <th>Airline Company Id</th>
+            <th>Original Country Code</th>
+            <th>Destination Country Code</th>
+            <th>Departure Time</th>
+            <th>Landing Time</th>
+            <th>Remaining Tickets</th>
+        </tr>-->
+
+    </table>
+    <script type="text/javascript">
+        const data =
+        {
+            FlightNumber: 0,
+            AirlineName: "",
+            DestCountry: "",
+            OriginCountry: "",
+            FlightType: ""
+        };
+
+        function onSearchClick() {
+            const selected = $("#options").val();
+            const tb = $("#txtBox").val();
+            switch (selected) {
+                case "flight":
+                    {
+                        data.FlightNumber = tb;
+                        break;
+                    }
+
+                case "airline": 
+                    {
+                        data.AirlineName = tb;
+                        break;
+                    }
+                case "destination":
+                    {
+                        data.DesCountry = tb;
+                        break;
+                    }
+                case "origin":
+                    {
+                        data.OriCountry = tb;
+                        break;
+                    }
+            }
+
+
+
+            const arr = []
+            //$(document).ready(() => {
+                //$tableFlights = $("#flightsTable")
+                $.ajax({
+                    url: "/api/AnonymousFacade/Search",
+                    type: 'POST',
+                    contentType: 'application/json',
+                   
+                    data: JSON.stringify(data)
+                }).then((result) => {
+                    console.log(result);
+                    $("#flightsTable").append('<tr class="table-danger">' +
+                        "<th>Airline Company Id</th>" +
+                        "<th>Original Country Code</th>" +
+                        "<th>Destination Country Code</th>" +
+                        "<th>Departure Time</th>" +
+                        "<th>Landing time</th>" +
+                        "<th>Remaining Tickets</th>" +
+                        "</tr>");
+
+                    $("#flightsTable").find("tr:gt(0)").remove();
+                    $.each(result, function (index, value) {
+                        $("#flightsTable").append('<tr style="text-align:center; color:black">' +
+                            "<td>" + result[index].AirlineCompanyId + "</td>" +
+                            "<td>" + result[index].OriginCountryCode + "</td>" +
+                            "<td>" + result[index].DestinationCountryCode + "</td>" +
+                            "<td>" + result[index].DepartureTime + "</td>" +
+                            "<td>" + result[index].LandingTime + "</td>" +
+                            "<td>" + result[index].RemainingTickets + "</td>")
+                        
+                    })
+                });
+            //})
+        }
+    </script>
+
+</body>
+</html>
